@@ -7,20 +7,20 @@ import java.sql.SQLException;
 
 public class ConnectionDatabase {
 	// Endereço do driver SQL Server
-	private final String Driver = "com.microsoft.sqlserver.jdbc.SQLSserverDriver";
+	private static final String Driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 	// Endereço do Banco de Dados
-	private final String URL = "jdbc:sqlserver://localhost:1433;encrypt=false;databaseName=Mercado";
+	private static final String URL = "jdbc:sqlserver://localhost:51536;encrypt=false;databaseName=Mercado";
 	// Usuario do Banco de Dados
-	private final String user = "sa";
+	private static final String user = "sa";
 	// Senha do Banco de Dados
-	private final String passoword = "Senailab03";
+	private static final String passoword = "Senailab03";
 
-	public Connection getConnection() {
+	public static Connection getConnection() {
 
 		try {
 			Class.forName(Driver);
 			System.out.println("Conexão realizada!");
-			return DriverManager.getConnection(URL, user, Driver);
+			return DriverManager.getConnection(URL, user, passoword);
 		} catch (ClassNotFoundException | SQLException e) {
 			// TODO Auto-generated catch block
 			throw new RuntimeException("Erro de conexão!", e);
@@ -29,7 +29,7 @@ public class ConnectionDatabase {
 
 	}
 
-	public void closeConnection(Connection con) {
+	public static void closeConnection(Connection con) {
 		try {
 
 			if(con != null) {
@@ -45,7 +45,7 @@ public class ConnectionDatabase {
 	}
 
 
-	public void closeConnection(Connection con, PreparedStatement stmt) {
+	public static void closeConnection(Connection con, PreparedStatement stmt) {
 		closeConnection(con);
 		try {
 			if(stmt != null) {
