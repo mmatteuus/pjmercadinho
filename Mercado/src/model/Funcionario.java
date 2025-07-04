@@ -8,7 +8,7 @@ public class Funcionario {
 	private int idFuncionario;
 	private String nomeFuncionario;
 	private String cpfFuncionario;  // Corrigido o nome do campo (de 'cpfFucionario')
-	private Date dataNasc;      // Alterado para LocalDate
+	private LocalDate dataNasc;      // Alterado para LocalDate
 	private String telefone;
 	private String endereco;
 	private String email;
@@ -57,7 +57,7 @@ public class Funcionario {
 		this.cpfFuncionario = cpfFuncionario;
 	}
 
-	public Date getDataNasc() {
+	public LocalDate getDataNasc() {
 		return dataNasc;
 	}
 
