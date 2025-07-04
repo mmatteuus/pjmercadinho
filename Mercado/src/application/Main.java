@@ -36,8 +36,20 @@ public class Main extends Application {
 	ClienteDAO clienteDAO = new ClienteDAO();
 	ArrayList<Cliente> clientes = new ArrayList<>();
 	
-	clientes = clienteDAO.read();
+	cliente.setNomeCliente("Cabral");
+	cliente.setCpfCliente("86578698676");
+	cliente.setDataNasc("2005-03-15");
+	cliente.setTelefone("639920345");
+	cliente.setEmail("cabral@gmail.com");
+	cliente.setEndereco("rua do espertos");
 	
+//	clienteDAO.updata(cliente);
+	
+//	cliente.delete("86578698676");
+	
+	
+	clientes = clienteDAO.search("ana");
+
 	for(int i = 0; i < clientes.size(); i++) {
 		cliente = clientes.get(i);
 		System.out.print("||");

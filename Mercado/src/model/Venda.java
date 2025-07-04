@@ -1,105 +1,109 @@
 package model;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public class Venda {
-	
-	private String idVendas;
-	private String idCliente;
-	private String idFucionario;
-	private String dataVenda;
-	private String precoTotal;
-	private String formaPag;
-	private String quantTotal;
-	
-	
-	public Venda(String idVendas, String idCliente, String idFucionario, String dataVenda, String precoTotal,
-			String formaPag, String quantTotal) {
-		super();
-		this.idVendas = idVendas;
-		this.idCliente = idCliente;
-		this.idFucionario = idFucionario;
-		this.dataVenda = dataVenda;
-		this.precoTotal = precoTotal;
-		this.formaPag = formaPag;
-		this.quantTotal = quantTotal;
-	}
+    private int idVenda;
+    private int idCliente;
+    private int idFuncionario;
+    private LocalDate dataVenda;
+    private BigDecimal precoTotal;
+    private String formaPag;
+    private int quantTotal;
 
+    // Construtores
+    public Venda() {
+    }
 
-	public Venda() {
-		super();
-	}
+    public Venda(int idCliente, int idFuncionario, LocalDate dataVenda, 
+                 BigDecimal precoTotal, String formaPag, int quantTotal) {
+        this.idCliente = idCliente;
+        this.idFuncionario = idFuncionario;
+        this.dataVenda = dataVenda;
+        this.precoTotal = precoTotal;
+        this.formaPag = formaPag;
+        this.quantTotal = quantTotal;
+    }
 
+    public Venda(int idVenda, int idCliente, int idFuncionario, LocalDate dataVenda, 
+                 BigDecimal precoTotal, String formaPag, int quantTotal) {
+        this.idVenda = idVenda;
+        this.idCliente = idCliente;
+        this.idFuncionario = idFuncionario;
+        this.dataVenda = dataVenda;
+        this.precoTotal = precoTotal;
+        this.formaPag = formaPag;
+        this.quantTotal = quantTotal;
+    }
 
-	public String getIdVendas() {
-		return idVendas;
-	}
+    // Getters e Setters
+    public int getIdVenda() {
+        return idVenda;
+    }
 
+    public void setIdVenda(int idVenda) {
+        this.idVenda = idVenda;
+    }
 
-	public void setIdVendas(String idVendas) {
-		this.idVendas = idVendas;
-	}
+    public int getIdCliente() {
+        return idCliente;
+    }
 
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
+    }
 
-	public String getIdCliente() {
-		return idCliente;
-	}
+    public int getIdFuncionario() {
+        return idFuncionario;
+    }
 
+    public void setIdFuncionario(int idFuncionario) {
+        this.idFuncionario = idFuncionario;
+    }
 
-	public void setIdCliente(String idCliente) {
-		this.idCliente = idCliente;
-	}
+    public LocalDate getDataVenda() {
+        return dataVenda;
+    }
 
+    public void setDataVenda(LocalDate dataVenda) {
+        this.dataVenda = dataVenda;
+    }
 
-	public String getIdFucionario() {
-		return idFucionario;
-	}
+    public BigDecimal getPrecoTotal() {
+        return precoTotal;
+    }
 
+    public void setPrecoTotal(BigDecimal precoTotal) {
+        this.precoTotal = precoTotal;
+    }
 
-	public void setIdFucionario(String idFucionario) {
-		this.idFucionario = idFucionario;
-	}
+    public String getFormaPag() {
+        return formaPag;
+    }
 
+    public void setFormaPag(String formaPag) {
+        this.formaPag = formaPag;
+    }
 
-	public String getDataVenda() {
-		return dataVenda;
-	}
+    public int getQuantTotal() {
+        return quantTotal;
+    }
 
+    public void setQuantTotal(int quantTotal) {
+        this.quantTotal = quantTotal;
+    }
 
-	public void setDataVenda(String dataVenda) {
-		this.dataVenda = dataVenda;
-	}
-
-
-	public String getPrecoTotal() {
-		return precoTotal;
-	}
-
-
-	public void setPrecoTotal(String precoTotal) {
-		this.precoTotal = precoTotal;
-	}
-
-
-	public String getFormaPag() {
-		return formaPag;
-	}
-
-
-	public void setFormaPag(String formaPag) {
-		this.formaPag = formaPag;
-	}
-
-
-	public String getQuantTotal() {
-		return quantTotal;
-	}
-
-
-	public void setQuantTotal(String quantTotal) {
-		this.quantTotal = quantTotal;
-	}
-	
-	
-	
-	
-
+    @Override
+    public String toString() {
+        return "Venda{" +
+                "idVenda=" + idVenda +
+                ", idCliente=" + idCliente +
+                ", idFuncionario=" + idFuncionario +
+                ", dataVenda=" + dataVenda +
+                ", precoTotal=" + precoTotal +
+                ", formaPag='" + formaPag + '\'' +
+                ", quantTotal=" + quantTotal +
+                '}';
+    }
 }

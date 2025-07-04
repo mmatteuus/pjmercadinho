@@ -1,117 +1,126 @@
 package model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class Funcionario {
+    private int idFuncionario;
+    private String nomeFuncionario;
+    private String cpfFuncionario;  // Corrigido o nome do campo (de 'cpfFucionario')
+    private LocalDate dataNasc;      // Alterado para LocalDate
+    private String telefone;
+    private String endereco;
+    private String email;
+    private String cargo;            // Adicionado campo cargo
+    private int nivel;               // Alterado para int
 
-	private String idProduto;
-	private String nomeProduto;
-	private String codBarra;
-	private String tipoUn;
-	private String dataFab;
-	private String dataVal;
-	private String precoUn;
-	private String estoque;
-	
-	
-	public Funcionario(String idProduto, String nomeProduto, String codBarra, String tipoUn, String dataFab,
-			String dataVal, String precoUn, String estoque) {
-		super();
-		this.idProduto = idProduto;
-		this.nomeProduto = nomeProduto;
-		this.codBarra = codBarra;
-		this.tipoUn = tipoUn;
-		this.dataFab = dataFab;
-		this.dataVal = dataVal;
-		this.precoUn = precoUn;
-		this.estoque = estoque;
-	}
+    // Construtores
+    public Funcionario() {
+    }
 
+    public Funcionario(int idFuncionario, String nomeFuncionario, String cpfFuncionario, LocalDate dataNasc,
+                      String telefone, String endereco, String email, String cargo, int nivel) {
+        this.idFuncionario = idFuncionario;
+        this.nomeFuncionario = nomeFuncionario;
+        this.cpfFuncionario = cpfFuncionario;
+        this.dataNasc = dataNasc;
+        this.telefone = telefone;
+        this.endereco = endereco;
+        this.email = email;
+        this.cargo = cargo;
+        this.nivel = nivel;
+    }
 
-	public Funcionario() {
-		super();
-	}
+    // Getters e Setters
+    public int getIdFuncionario() {
+        return idFuncionario;
+    }
 
+    public void setIdFuncionario(int idFuncionario) {
+        this.idFuncionario = idFuncionario;
+    }
 
-	public String getIdProduto() {
-		return idProduto;
-	}
+    public String getNomeFuncionario() {
+        return nomeFuncionario;
+    }
 
+    public void setNomeFuncionario(String nomeFuncionario) {
+        this.nomeFuncionario = nomeFuncionario;
+    }
 
-	public void setIdProduto(String idProduto) {
-		this.idProduto = idProduto;
-	}
+    public String getCpfFuncionario() {
+        return cpfFuncionario;
+    }
 
+    public void setCpfFuncionario(String cpfFuncionario) {
+        this.cpfFuncionario = cpfFuncionario;
+    }
 
-	public String getNomeProduto() {
-		return nomeProduto;
-	}
+    public LocalDate getDataNasc() {
+        return dataNasc;
+    }
 
+    public void setDataNasc(LocalDate dataNasc) {
+        this.dataNasc = dataNasc;
+    }
 
-	public void setNomeProduto(String nomeProduto) {
-		this.nomeProduto = nomeProduto;
-	}
+    // Método auxiliar para converter String para LocalDate
+    public void setDataNasc(String dataNasc) {
+        this.dataNasc = LocalDate.parse(dataNasc, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 
+    public String getTelefone() {
+        return telefone;
+    }
 
-	public String getCodBarra() {
-		return codBarra;
-	}
+    public void setTelefone(String telefone) {
+        this.telefone = telefone;
+    }
 
+    public String getEndereco() {
+        return endereco;
+    }
 
-	public void setCodBarra(String codBarra) {
-		this.codBarra = codBarra;
-	}
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }
 
+    public String getEmail() {
+        return email;
+    }
 
-	public String getTipoUn() {
-		return tipoUn;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
+    public String getCargo() {
+        return cargo;
+    }
 
-	public void setTipoUn(String tipoUn) {
-		this.tipoUn = tipoUn;
-	}
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
 
+    public int getNivel() {
+        return nivel;
+    }
 
-	public String getDataFab() {
-		return dataFab;
-	}
+    public void setNivel(int nivel) {
+        this.nivel = nivel;
+    }
 
-
-	public void setDataFab(String dataFab) {
-		this.dataFab = dataFab;
-	}
-
-
-	public String getDataVal() {
-		return dataVal;
-	}
-
-
-	public void setDataVal(String dataVal) {
-		this.dataVal = dataVal;
-	}
-
-
-	public String getPrecoUn() {
-		return precoUn;
-	}
-
-
-	public void setPrecoUn(String precoUn) {
-		this.precoUn = precoUn;
-	}
-
-
-	public String getEstoque() {
-		return estoque;
-	}
-
-
-	public void setEstoque(String estoque) {
-		this.estoque = estoque;
-	}
-	
-	
-	
-	
-	
+    @Override
+    public String toString() {
+        return "Funcionario{" +
+                "idFuncionario=" + idFuncionario +
+                ", nomeFuncionario='" + nomeFuncionario + '\'' +
+                ", cpfFuncionario='" + cpfFuncionario + '\'' +
+                ", dataNasc=" + dataNasc +
+                ", telefone='" + telefone + '\'' +
+                ", endereco='" + endereco + '\'' +
+                ", email='" + email + '\'' +
+                ", cargo='" + cargo + '\'' +
+                ", nivel=" + nivel +
+                '}';
+    }
 }

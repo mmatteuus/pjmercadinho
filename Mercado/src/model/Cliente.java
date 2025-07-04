@@ -65,6 +65,10 @@ public class Cliente {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	public void delete(String string) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 
