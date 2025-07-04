@@ -48,7 +48,7 @@ public class FuncionarioDAO {
                 funcionario.setIdFuncionario(rs.getInt("idFuncionario"));
                 funcionario.setNomeFuncionario(rs.getString("nomeFuncionario"));
                 funcionario.setCpfFuncionario(rs.getString("cpfFuncionario"));
-                funcionario.setDataNasc(rs.getDate("dataNasc").toLocalDate());
+                funcionario.setDataNasc(rs.getDate("dataNasc"));
                 funcionario.setTelefone(rs.getString("telefone"));
                 funcionario.setEndereco(rs.getString("endereco"));
                 funcionario.setEmail(rs.getString("email"));
