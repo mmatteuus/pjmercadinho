@@ -4,12 +4,19 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import connectionFactory.ConnectionDatabase;
 import model.Funcionario;
 
 public class FuncionarioDAO {
+    
+    // Formato esperado para datas (dd/MM/yyyy)
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public void create(Funcionario funcionario) {
         Connection con = ConnectionDatabase.getConnection();
@@ -18,7 +25,11 @@ public class FuncionarioDAO {
             stmt = con.prepareStatement("INSERT INTO Funcionario (nomeFuncionario, cpfFuncionario, dataNasc, telefone, endereco, email, cargo, nivel) VALUES (?,?,?,?,?,?,?,?)");
             stmt.setString(1, funcionario.getNomeFuncionario());
             stmt.setString(2, funcionario.getCpfFuncionario());
-            stmt.setDate(3, java.sql.Date.valueOf(funcionario.getDataNasc()));
+            
+            // Convertendo String para java.sql.Date com o formato correto
+            java.sql.Date dataNasc = convertStringToSqlDate(funcionario.getDataNasc());
+            stmt.setDate(3, dataNasc);
+            
             stmt.setString(4, funcionario.getTelefone());
             stmt.setString(5, funcionario.getEndereco());
             stmt.setString(6, funcionario.getEmail());
@@ -48,7 +59,10 @@ public class FuncionarioDAO {
                 funcionario.setIdFuncionario(rs.getInt("idFuncionario"));
                 funcionario.setNomeFuncionario(rs.getString("nomeFuncionario"));
                 funcionario.setCpfFuncionario(rs.getString("cpfFuncionario"));
-                funcionario.setDataNasc(rs.getDate("dataNasc"));
+                
+                // Convertendo Date para String formatada
+                funcionario.setDataNasc(convertSqlDateToString(rs.getDate("dataNasc")));
+                
                 funcionario.setTelefone(rs.getString("telefone"));
                 funcionario.setEndereco(rs.getString("endereco"));
                 funcionario.setEmail(rs.getString("email"));
@@ -73,7 +87,11 @@ public class FuncionarioDAO {
                     + "telefone=?, endereco=?, email=?, cargo=?, nivel=? WHERE idFuncionario=?");
             stmt.setString(1, funcionario.getNomeFuncionario());
             stmt.setString(2, funcionario.getCpfFuncionario());
-            stmt.setDate(3, java.sql.Date.valueOf(funcionario.getDataNasc()));
+            
+            // Convertendo String para java.sql.Date com o formato correto
+            java.sql.Date dataNasc = convertStringToSqlDate(funcionario.getDataNasc());
+            stmt.setDate(3, dataNasc);
+            
             stmt.setString(4, funcionario.getTelefone());
             stmt.setString(5, funcionario.getEndereco());
             stmt.setString(6, funcionario.getEmail());
@@ -126,7 +144,10 @@ public class FuncionarioDAO {
                 funcionario.setIdFuncionario(rs.getInt("idFuncionario"));
                 funcionario.setNomeFuncionario(rs.getString("nomeFuncionario"));
                 funcionario.setCpfFuncionario(rs.getString("cpfFuncionario"));
-                funcionario.setDataNasc(rs.getDate("dataNasc").toLocalDate());
+                
+                // Convertendo Date para String formatada
+                funcionario.setDataNasc(convertSqlDateToString(rs.getDate("dataNasc")));
+                
                 funcionario.setTelefone(rs.getString("telefone"));
                 funcionario.setEndereco(rs.getString("endereco"));
                 funcionario.setEmail(rs.getString("email"));
@@ -143,7 +164,6 @@ public class FuncionarioDAO {
         return funcionarios;
     }
     
-    // Método adicional para buscar por ID
     public Funcionario getById(int idFuncionario) {
         Connection con = ConnectionDatabase.getConnection();
         PreparedStatement stmt = null;
@@ -160,7 +180,10 @@ public class FuncionarioDAO {
                 funcionario.setIdFuncionario(rs.getInt("idFuncionario"));
                 funcionario.setNomeFuncionario(rs.getString("nomeFuncionario"));
                 funcionario.setCpfFuncionario(rs.getString("cpfFuncionario"));
-                funcionario.setDataNasc(rs.getDate("dataNasc").toLocalDate());
+                
+                // Convertendo Date para String formatada
+                funcionario.setDataNasc(convertSqlDateToString(rs.getDate("dataNasc")));
+                
                 funcionario.setTelefone(rs.getString("telefone"));
                 funcionario.setEndereco(rs.getString("endereco"));
                 funcionario.setEmail(rs.getString("email"));
@@ -173,5 +196,25 @@ public class FuncionarioDAO {
             ConnectionDatabase.closeConnection(con, stmt, rs);
         }
         return funcionario;
+    }
+    
+    // Métodos auxiliares para conversão de datas
+    private java.sql.Date convertStringToSqlDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return null;
+        }
+        try {
+            LocalDate localDate = LocalDate.parse(dateString, DATE_FORMATTER);
+            return java.sql.Date.valueOf(localDate);
+        } catch (DateTimeParseException e) {
+            throw new RuntimeException("Formato de data inválido: " + dateString + ". Use o formato dd/MM/yyyy", e);
+        }
+    }
+    
+    private String convertSqlDateToString(java.sql.Date sqlDate) {
+        if (sqlDate == null) {
+            return null;
+        }
+        return sqlDate.toLocalDate().format(DATE_FORMATTER);
     }
 }
