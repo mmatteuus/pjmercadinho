@@ -1,21 +1,22 @@
 package model;
 
 public class Funcionario {
-    private int idFuncionario;
+    private String idFuncionario;
     private String nomeFuncionario;
     private String cpfFuncionario;
-    private String dataNasc;  // Mantido como String
+    private String dataNasc;  // Mantido como String (formato dd/MM/yyyy)
     private String telefone;
     private String endereco;
     private String email;
     private String cargo;
-    private int nivel;
+    private String nivel;
+    private String senha;
 
     // Construtores
     public Funcionario() {}
 
-    public Funcionario(int idFuncionario, String nomeFuncionario, String cpfFuncionario, String dataNasc,
-                       String telefone, String endereco, String email, String cargo, int nivel) {
+    public Funcionario(String idFuncionario, String nomeFuncionario, String cpfFuncionario, String dataNasc,
+                       String telefone, String endereco, String email, String cargo, String nivel, String senha) {
         this.idFuncionario = idFuncionario;
         this.nomeFuncionario = nomeFuncionario;
         this.cpfFuncionario = cpfFuncionario;
@@ -25,14 +26,15 @@ public class Funcionario {
         this.email = email;
         this.cargo = cargo;
         this.nivel = nivel;
+        this.senha = senha;
     }
 
     // Getters e Setters
-    public int getIdFuncionario() {
+    public String getIdFuncionario() {
         return idFuncionario;
     }
 
-    public void setIdFuncionario(int idFuncionario) {
+    public void setIdFuncionario(String idFuncionario) {
         this.idFuncionario = idFuncionario;
     }
 
@@ -92,26 +94,34 @@ public class Funcionario {
         this.cargo = cargo;
     }
 
-    public int getNivel() {
+    public String getNivel() {
         return nivel;
     }
 
-    public void setNivel(int nivel) {
+    public void setNivel(String nivel) {
         this.nivel = nivel;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 
     @Override
     public String toString() {
         return "Funcionario{" +
-                "idFuncionario=" + idFuncionario +
+                "idFuncionario='" + idFuncionario + '\'' +
                 ", nomeFuncionario='" + nomeFuncionario + '\'' +
                 ", cpfFuncionario='" + cpfFuncionario + '\'' +
-                ", dataNasc='" + dataNasc + '\'' +  // Adicionado aspas para clareza
+                ", dataNasc='" + dataNasc + '\'' +
                 ", telefone='" + telefone + '\'' +
                 ", endereco='" + endereco + '\'' +
                 ", email='" + email + '\'' +
                 ", cargo='" + cargo + '\'' +
-                ", nivel=" + nivel +
+                ", nivel='" + nivel + '\'' +
                 '}';
     }
 }
