@@ -1,231 +1,172 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import connectionFactory.ConnectionDatabase;
+import model.Produto;
+
+import java.math.BigDecimal;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import connectionFactory.ConnectionDatabase;
-import model.Produto;
-
 public class ProdutoDAO {
 
-    // CREATE
-    public void create(Produto produto) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement(
-                "INSERT INTO Produto (nomeProduto, codBarra, tipoUn, dataFab, dataVal, precoUn, estoque) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)");
-            
-            stmt.setString(1, produto.getNomeProduto());
-            stmt.setString(2, produto.getCodBarra());
-            stmt.setString(3, produto.getTipoUn());
-            stmt.setDate(4, java.sql.Date.valueOf(produto.getDataFab()));
-            stmt.setDate(5, produto.getDataVal() != null ? java.sql.Date.valueOf(produto.getDataVal()) : null);
-            stmt.setBigDecimal(6, produto.getPrecoUn());
-            stmt.setInt(7, produto.getEstoque());
-            
-            stmt.executeUpdate();
-            System.out.println("Produto cadastrado com sucesso!");
-            
+    public boolean create(Produto p) {
+        String sql = "INSERT INTO Produto (nomeProduto, codBarra, tipoUn, dataFab, dataVal, precoUn, estoque) VALUES (?,?,?,?,?,?,?)";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, p.getNomeProduto());
+            stmt.setString(2, p.getCodBarra());
+            stmt.setString(3, p.getTipoUn());
+            stmt.setDate(4, toSqlDate(p.getDataFab()));
+            stmt.setDate(5, toSqlDate(p.getDataVal()));
+            stmt.setBigDecimal(6, nvl(p.getPrecoUn()));
+            stmt.setInt(7, p.getEstoque());
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao cadastrar produto", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
         }
     }
 
-    // READ ALL
-    public List<Produto> readAll() {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Produto> produtos = new ArrayList<>();
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Produto");
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Produto produto = new Produto();
-                produto.setIdProduto(rs.getInt("idProduto"));
-                produto.setNomeProduto(rs.getString("nomeProduto"));
-                produto.setCodBarra(rs.getString("codBarra"));
-                produto.setTipoUn(rs.getString("tipoUn"));
-                produto.setDataFab(rs.getDate("dataFab").toLocalDate());
-                
-                java.sql.Date dataVal = rs.getDate("dataVal");
-                produto.setDataVal(dataVal != null ? dataVal.toLocalDate() : null);
-                
-                produto.setPrecoUn(rs.getBigDecimal("precoUn"));
-                produto.setEstoque(rs.getInt("estoque"));
-                
-                produtos.add(produto);
-            }
-            
+    public List<Produto> read() {
+        String sql = "SELECT * FROM Produto";
+        List<Produto> list = new ArrayList<>();
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) list.add(mapRow(rs));
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao ler produtos", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return produtos;
+        return list;
     }
 
-    // UPDATE
-    public void update(Produto produto) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement(
-                "UPDATE Produto SET nomeProduto=?, codBarra=?, tipoUn=?, " +
-                "dataFab=?, dataVal=?, precoUn=?, estoque=? WHERE idProduto=?");
-            
-            stmt.setString(1, produto.getNomeProduto());
-            stmt.setString(2, produto.getCodBarra());
-            stmt.setString(3, produto.getTipoUn());
-            stmt.setDate(4, java.sql.Date.valueOf(produto.getDataFab()));
-            stmt.setDate(5, produto.getDataVal() != null ? java.sql.Date.valueOf(produto.getDataVal()) : null);
-            stmt.setBigDecimal(6, produto.getPrecoUn());
-            stmt.setInt(7, produto.getEstoque());
-            stmt.setInt(8, produto.getIdProduto());
-            
-            stmt.executeUpdate();
-            System.out.println("Produto atualizado com sucesso!");
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao atualizar produto", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
-        }
-    }
-
-    // DELETE
-    public void delete(int idProduto) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement("DELETE FROM Produto WHERE idProduto = ?");
-            stmt.setInt(1, idProduto);
-            
-            int rowsAffected = stmt.executeUpdate();
-            
-            if (rowsAffected > 0) {
-                System.out.println("Produto excluído com sucesso!");
-            } else {
-                System.out.println("Nenhum produto encontrado com o ID: " + idProduto);
-            }
-            
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao excluir produto", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
-        }
-    }
-
-    // READ BY ID
     public Produto readById(int idProduto) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Produto produto = null;
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Produto WHERE idProduto = ?");
+        String sql = "SELECT * FROM Produto WHERE idProduto = ?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, idProduto);
-            rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                produto = new Produto();
-                produto.setIdProduto(rs.getInt("idProduto"));
-                produto.setNomeProduto(rs.getString("nomeProduto"));
-                produto.setCodBarra(rs.getString("codBarra"));
-                produto.setTipoUn(rs.getString("tipoUn"));
-                produto.setDataFab(rs.getDate("dataFab").toLocalDate());
-                
-                java.sql.Date dataVal = rs.getDate("dataVal");
-                produto.setDataVal(dataVal != null ? dataVal.toLocalDate() : null);
-                
-                produto.setPrecoUn(rs.getBigDecimal("precoUn"));
-                produto.setEstoque(rs.getInt("estoque"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? mapRow(rs) : null;
             }
-            
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar produto por ID", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return produto;
     }
 
-    // BUSCA POR NOME OU CÓDIGO DE BARRAS
     public List<Produto> search(String termo) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        List<Produto> produtos = new ArrayList<>();
-        
-        try {
-            stmt = con.prepareStatement(
-                "SELECT * FROM Produto WHERE nomeProduto LIKE ? OR codBarra LIKE ?");
-            stmt.setString(1, "%" + termo + "%");
-            stmt.setString(2, "%" + termo + "%");
-            
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Produto produto = new Produto();
-                produto.setIdProduto(rs.getInt("idProduto"));
-                produto.setNomeProduto(rs.getString("nomeProduto"));
-                produto.setCodBarra(rs.getString("codBarra"));
-                produto.setTipoUn(rs.getString("tipoUn"));
-                produto.setDataFab(rs.getDate("dataFab").toLocalDate());
-                
-                java.sql.Date dataVal = rs.getDate("dataVal");
-                produto.setDataVal(dataVal != null ? dataVal.toLocalDate() : null);
-                
-                produto.setPrecoUn(rs.getBigDecimal("precoUn"));
-                produto.setEstoque(rs.getInt("estoque"));
-                
-                produtos.add(produto);
+        String like = "%" + termo + "%";
+        String sql = "SELECT * FROM Produto WHERE nomeProduto LIKE ? OR codBarra LIKE ?";
+        List<Produto> list = new ArrayList<>();
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, like);
+            stmt.setString(2, like);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
             }
-            
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar produtos", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return produtos;
+        return list;
     }
 
-    // ATUALIZAR ESTOQUE
-    public void atualizarEstoque(int idProduto, int quantidade) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement(
-                "UPDATE Produto SET estoque = estoque + ? WHERE idProduto = ?");
-            stmt.setInt(1, quantidade);
-            stmt.setInt(2, idProduto);
-            
-            stmt.executeUpdate();
-            System.out.println("Estoque atualizado com sucesso!");
-            
+    public boolean update(Produto p) {
+        String sql = "UPDATE Produto SET nomeProduto=?, codBarra=?, tipoUn=?, dataFab=?, dataVal=?, precoUn=?, estoque=? WHERE idProduto=?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, p.getNomeProduto());
+            stmt.setString(2, p.getCodBarra());
+            stmt.setString(3, p.getTipoUn());
+            stmt.setDate(4, toSqlDate(p.getDataFab()));
+            stmt.setDate(5, toSqlDate(p.getDataVal()));
+            stmt.setBigDecimal(6, nvl(p.getPrecoUn()));
+            stmt.setInt(7, p.getEstoque());
+            stmt.setInt(8, p.getIdProduto());
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao atualizar estoque", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
+            throw new RuntimeException("Erro ao atualizar produto", e);
         }
     }
+
+    public boolean delete(int idProduto) {
+        String sql = "DELETE FROM Produto WHERE idProduto = ?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, idProduto);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao excluir produto", e);
+        }
+    }
+
+    public boolean atualizarEstoque(int idProduto, int delta) {
+        String sql = "UPDATE Produto SET estoque = estoque + ? WHERE idProduto = ? AND estoque + ? >= 0";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, delta);
+            stmt.setInt(2, idProduto);
+            stmt.setInt(3, delta);
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar estoque", e);
+        }
+    }
+
+    public List<Produto> readProdutoEB() { return readProdutoEB(5); }
+
+    public List<Produto> readProdutoEB(int threshold) {
+        String sql = "SELECT * FROM Produto WHERE estoque <= ? ORDER BY estoque ASC";
+        List<Produto> list = new ArrayList<>();
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, threshold);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar produtos com estoque baixo", e);
+        }
+        return list;
+    }
+
+    public List<Produto> readProdutoAV() { return readProdutoAV(30); }
+
+    public List<Produto> readProdutoAV(int dias) {
+        String sql = """
+            SELECT * FROM Produto
+            WHERE dataVal IS NOT NULL
+              AND CAST(dataVal AS date) >= CAST(GETDATE() AS date)
+              AND CAST(dataVal AS date) <= DATEADD(day, ?, CAST(GETDATE() AS date))
+            ORDER BY dataVal ASC
+        """;
+        List<Produto> list = new ArrayList<>();
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setInt(1, dias);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) list.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar produtos a vencer", e);
+        }
+        return list;
+    }
+
+    private Produto mapRow(ResultSet rs) throws SQLException {
+        Produto p = new Produto();
+        p.setIdProduto(rs.getInt("idProduto"));
+        p.setNomeProduto(rs.getString("nomeProduto"));
+        p.setCodBarra(rs.getString("codBarra"));
+        p.setTipoUn(rs.getString("tipoUn"));
+        p.setDataFab(toLocalDate(rs.getDate("dataFab")));
+        p.setDataVal(toLocalDate(rs.getDate("dataVal")));
+        p.setPrecoUn(rs.getBigDecimal("precoUn"));
+        p.setEstoque(rs.getInt("estoque"));
+        return p;
+    }
+
+    private Date toSqlDate(LocalDate d) { return d == null ? null : Date.valueOf(d); }
+    private LocalDate toLocalDate(Date d) { return d == null ? null : d.toLocalDate(); }
+    private BigDecimal nvl(BigDecimal v) { return v == null ? BigDecimal.ZERO : v; }
 }

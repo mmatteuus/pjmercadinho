@@ -2,9 +2,16 @@ module Mercado {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    requires javafx.base;
     requires java.sql;
-  
 
-    opens application to javafx.graphics, javafx.fxml;
-    opens controller to javafx.graphics, javafx.fxml;
+    // JavaFX precisa instanciar sua Application e controllers
+    exports application;
+    opens application to javafx.graphics;
+
+    exports controller;
+    opens controller to javafx.fxml, javafx.graphics;
+
+    exports dao;
+    exports model;
 }

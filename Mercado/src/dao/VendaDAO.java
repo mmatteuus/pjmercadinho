@@ -1,315 +1,216 @@
 package dao;
 
+import connectionFactory.ConnectionDatabase;
+import model.Venda;
+
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import connectionFactory.ConnectionDatabase;
-import model.Venda;
-
 public class VendaDAO {
 
-    // CREATE
+    // CREATE simples: retorna id gerado
     public int create(Venda venda) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet generatedKeys = null;
-        int idVendaGerada = -1;
-        
-        try {
-            stmt = con.prepareStatement(
-                "INSERT INTO Venda (idCliente, idFuncionario, dataVenda, precoTotal, formaPag, quantTotal) " +
-                "VALUES (?, ?, ?, ?, ?, ?)",
-                PreparedStatement.RETURN_GENERATED_KEYS);
-            
+        String sql = "INSERT INTO Venda (idCliente, idFuncionario, dataVenda, precoTotal, formaPag, quantTotal) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setInt(1, venda.getIdCliente());
             stmt.setInt(2, venda.getIdFuncionario());
-            stmt.setDate(3, java.sql.Date.valueOf(venda.getDataVenda()));
+            stmt.setDate(3, Date.valueOf(venda.getDataVenda()));
             stmt.setBigDecimal(4, venda.getPrecoTotal());
             stmt.setString(5, venda.getFormaPag());
             stmt.setInt(6, venda.getQuantTotal());
-            
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows == 0) {
-                throw new SQLException("Falha ao criar venda, nenhuma linha afetada.");
+
+            int affected = stmt.executeUpdate();
+            if (affected == 0) throw new SQLException("Nenhuma linha afetada no insert de Venda.");
+
+            try (ResultSet keys = stmt.getGeneratedKeys()) {
+                if (keys.next()) return keys.getInt(1);
             }
-            
-            generatedKeys = stmt.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                idVendaGerada = generatedKeys.getInt(1);
-            } else {
-                throw new SQLException("Falha ao obter o ID gerado para a venda.");
-            }
-            
-            System.out.println("Venda cadastrada com sucesso! ID: " + idVendaGerada);
-            
+            throw new SQLException("ID gerado da venda não retornado.");
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao cadastrar venda", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, generatedKeys);
         }
-        
-        return idVendaGerada;
     }
+
+    // READ alias usado nos controllers
+    public List<Venda> read() { return readAll(); }
 
     // READ ALL
     public List<Venda> readAll() {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM Venda";
         List<Venda> vendas = new ArrayList<>();
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Venda");
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Venda venda = new Venda();
-                venda.setIdVenda(rs.getInt("idVenda"));
-                venda.setIdCliente(rs.getInt("idCliente"));
-                venda.setIdFuncionario(rs.getInt("idFuncionario"));
-                venda.setDataVenda(rs.getDate("dataVenda").toLocalDate());
-                venda.setPrecoTotal(rs.getBigDecimal("precoTotal"));
-                venda.setFormaPag(rs.getString("formaPag"));
-                venda.setQuantTotal(rs.getInt("quantTotal"));
-                
-                vendas.add(venda);
-            }
-            
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) vendas.add(mapRow(rs));
+            return vendas;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao ler vendas", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return vendas;
+    }
+
+    // READ com joins para relatório (clienteNome, vendedorNome)
+    public List<Venda> readResumo() {
+        String sql = """
+            SELECT v.idVenda, v.idCliente, v.idFuncionario, v.dataVenda, v.precoTotal, v.formaPag, v.quantTotal,
+                   c.nomeCliente   AS clienteNome,
+                   f.nomeFuncionario AS vendedorNome
+            FROM Venda v
+            JOIN Cliente c     ON c.idCliente = v.idCliente
+            JOIN Funcionario f ON f.idFuncionario = v.idFuncionario
+            ORDER BY v.dataVenda DESC, v.idVenda DESC
+        """;
+        List<Venda> vendas = new ArrayList<>();
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Venda v = mapRow(rs);
+                // Se o seu model.Venda tiver esses campos:
+                try {
+                    v.getClass().getMethod("setClienteNome", String.class).invoke(v, rs.getString("clienteNome"));
+                    v.getClass().getMethod("setVendedorNome", String.class).invoke(v, rs.getString("vendedorNome"));
+                } catch (Exception ignore) { /* campos opcionais */ }
+                vendas.add(v);
+            }
+            return vendas;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao ler resumo de vendas", e);
+        }
     }
 
     // READ BY ID
     public Venda readById(int idVenda) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Venda venda = null;
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Venda WHERE idVenda = ?");
+        String sql = "SELECT * FROM Venda WHERE idVenda = ?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setInt(1, idVenda);
-            rs = stmt.executeQuery();
-            
-            if (rs.next()) {
-                venda = new Venda();
-                venda.setIdVenda(rs.getInt("idVenda"));
-                venda.setIdCliente(rs.getInt("idCliente"));
-                venda.setIdFuncionario(rs.getInt("idFuncionario"));
-                venda.setDataVenda(rs.getDate("dataVenda").toLocalDate());
-                venda.setPrecoTotal(rs.getBigDecimal("precoTotal"));
-                venda.setFormaPag(rs.getString("formaPag"));
-                venda.setQuantTotal(rs.getInt("quantTotal"));
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? mapRow(rs) : null;
             }
-            
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar venda por ID", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return venda;
     }
 
     // UPDATE
-    public void update(Venda venda) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement(
-                "UPDATE Venda SET idCliente=?, idFuncionario=?, dataVenda=?, " +
-                "precoTotal=?, formaPag=?, quantTotal=? WHERE idVenda=?");
-            
+    public boolean update(Venda venda) {
+        String sql = "UPDATE Venda SET idCliente=?, idFuncionario=?, dataVenda=?, precoTotal=?, formaPag=?, quantTotal=? WHERE idVenda=?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setInt(1, venda.getIdCliente());
             stmt.setInt(2, venda.getIdFuncionario());
-            stmt.setDate(3, java.sql.Date.valueOf(venda.getDataVenda()));
+            stmt.setDate(3, Date.valueOf(venda.getDataVenda()));
             stmt.setBigDecimal(4, venda.getPrecoTotal());
             stmt.setString(5, venda.getFormaPag());
             stmt.setInt(6, venda.getQuantTotal());
             stmt.setInt(7, venda.getIdVenda());
-            
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows > 0) {
-                System.out.println("Venda atualizada com sucesso!");
-            } else {
-                System.out.println("Nenhuma venda encontrada com o ID: " + venda.getIdVenda());
-            }
-            
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar venda", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
         }
     }
 
     // DELETE
-    public void delete(int idVenda) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement("DELETE FROM Venda WHERE idVenda = ?");
+    public boolean delete(int idVenda) {
+        String sql = "DELETE FROM Venda WHERE idVenda = ?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setInt(1, idVenda);
-            
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows > 0) {
-                System.out.println("Venda excluída com sucesso!");
-            } else {
-                System.out.println("Nenhuma venda encontrada com o ID: " + idVenda);
-            }
-            
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao excluir venda", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
         }
     }
 
     // BUSCA POR DATA
-    public List<Venda> buscarPorData(LocalDate dataInicio, LocalDate dataFim) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+    public List<Venda> buscarPorData(LocalDate inicio, LocalDate fim) {
+        String sql = "SELECT * FROM Venda WHERE dataVenda BETWEEN ? AND ?";
         List<Venda> vendas = new ArrayList<>();
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Venda WHERE dataVenda BETWEEN ? AND ?");
-            stmt.setDate(1, java.sql.Date.valueOf(dataInicio));
-            stmt.setDate(2, java.sql.Date.valueOf(dataFim));
-            
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Venda venda = new Venda();
-                venda.setIdVenda(rs.getInt("idVenda"));
-                venda.setIdCliente(rs.getInt("idCliente"));
-                venda.setIdFuncionario(rs.getInt("idFuncionario"));
-                venda.setDataVenda(rs.getDate("dataVenda").toLocalDate());
-                venda.setPrecoTotal(rs.getBigDecimal("precoTotal"));
-                venda.setFormaPag(rs.getString("formaPag"));
-                venda.setQuantTotal(rs.getInt("quantTotal"));
-                
-                vendas.add(venda);
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setDate(1, Date.valueOf(inicio));
+            stmt.setDate(2, Date.valueOf(fim));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) vendas.add(mapRow(rs));
             }
-            
+            return vendas;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar vendas por data", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return vendas;
     }
 
     // BUSCA POR CLIENTE
     public List<Venda> buscarPorCliente(int idCliente) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM Venda WHERE idCliente = ?";
         List<Venda> vendas = new ArrayList<>();
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Venda WHERE idCliente = ?");
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setInt(1, idCliente);
-            
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Venda venda = new Venda();
-                venda.setIdVenda(rs.getInt("idVenda"));
-                venda.setIdCliente(rs.getInt("idCliente"));
-                venda.setIdFuncionario(rs.getInt("idFuncionario"));
-                venda.setDataVenda(rs.getDate("dataVenda").toLocalDate());
-                venda.setPrecoTotal(rs.getBigDecimal("precoTotal"));
-                venda.setFormaPag(rs.getString("formaPag"));
-                venda.setQuantTotal(rs.getInt("quantTotal"));
-                
-                vendas.add(venda);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) vendas.add(mapRow(rs));
             }
-            
+            return vendas;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar vendas por cliente", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return vendas;
     }
 
     // BUSCA POR FUNCIONÁRIO
     public List<Venda> buscarPorFuncionario(int idFuncionario) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        String sql = "SELECT * FROM Venda WHERE idFuncionario = ?";
         List<Venda> vendas = new ArrayList<>();
-        
-        try {
-            stmt = con.prepareStatement("SELECT * FROM Venda WHERE idFuncionario = ?");
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setInt(1, idFuncionario);
-            
-            rs = stmt.executeQuery();
-            
-            while (rs.next()) {
-                Venda venda = new Venda();
-                venda.setIdVenda(rs.getInt("idVenda"));
-                venda.setIdCliente(rs.getInt("idCliente"));
-                venda.setIdFuncionario(rs.getInt("idFuncionario"));
-                venda.setDataVenda(rs.getDate("dataVenda").toLocalDate());
-                venda.setPrecoTotal(rs.getBigDecimal("precoTotal"));
-                venda.setFormaPag(rs.getString("formaPag"));
-                venda.setQuantTotal(rs.getInt("quantTotal"));
-                
-                vendas.add(venda);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) vendas.add(mapRow(rs));
             }
-            
+            return vendas;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar vendas por funcionário", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt, rs);
         }
-        
-        return vendas;
     }
 
-    // ATUALIZAR TOTAL DA VENDA
-    public void atualizarTotalVenda(int idVenda, BigDecimal novoTotal, int novaQuantidade) {
-        Connection con = ConnectionDatabase.getConnection();
-        PreparedStatement stmt = null;
-        
-        try {
-            stmt = con.prepareStatement(
-                "UPDATE Venda SET precoTotal = ?, quantTotal = ? WHERE idVenda = ?");
+    // ATUALIZAR TOTAL
+    public boolean atualizarTotalVenda(int idVenda, BigDecimal novoTotal, int novaQuantidade) {
+        String sql = "UPDATE Venda SET precoTotal = ?, quantTotal = ? WHERE idVenda = ?";
+        try (Connection con = ConnectionDatabase.getConnection();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setBigDecimal(1, novoTotal);
             stmt.setInt(2, novaQuantidade);
             stmt.setInt(3, idVenda);
-            
-            int affectedRows = stmt.executeUpdate();
-            
-            if (affectedRows > 0) {
-                System.out.println("Total da venda atualizado com sucesso!");
-            } else {
-                System.out.println("Nenhuma venda encontrada com o ID: " + idVenda);
-            }
-            
+            return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar total da venda", e);
-        } finally {
-            ConnectionDatabase.closeConnection(con, stmt);
         }
+    }
+
+    // ===== Helpers =====
+
+    private Venda mapRow(ResultSet rs) throws SQLException {
+        Venda v = new Venda();
+        v.setIdVenda(rs.getInt("idVenda"));
+        v.setIdCliente(rs.getInt("idCliente"));
+        v.setIdFuncionario(rs.getInt("idFuncionario"));
+        v.setDataVenda(rs.getDate("dataVenda").toLocalDate());
+        v.setPrecoTotal(rs.getBigDecimal("precoTotal"));
+        v.setFormaPag(rs.getString("formaPag"));
+        v.setQuantTotal(rs.getInt("quantTotal"));
+        return v;
     }
 }

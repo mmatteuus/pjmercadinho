@@ -1,59 +1,53 @@
 package application;
 
-import controller.controllerMainMenu;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import model.Funcionario;
-
-import java.io.IOException;
 
 public class Main extends Application {
-    private static Stage stage;
-    private static Scene main;
+
+    private static Stage primaryStage;
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage stage) {
         try {
-            stage = primaryStage;
-            Parent fxmlLogin = FXMLLoader.load(getClass().getResource("/view/viewLogin.fxml"));
-            main = new Scene(fxmlLogin);
-            stage.setTitle("Mercadinho - Login");
-            stage.setScene(main);
-            stage.setResizable(false);
-            stage.centerOnScreen();
-            stage.show();
+            primaryStage = stage;
+            TelaLogin(); // abre direto o login
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // AQUI: com passagem de Funcionario
-    public static void TelaHome(Funcionario funcionario) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("/view/viewMainMenu.fxml"));
-        Parent telaHome = loader.load();
-
-        controllerMainMenu controller = loader.getController();
-        controller.setFuncionario(funcionario);
-
-        main = new Scene(telaHome);
-        stage.setTitle("Mercadinho - Menu Principal");
-        stage.setScene(main);
-        stage.setResizable(false);
-        stage.centerOnScreen();
-        stage.show();
+    // ---- Tela Login ----
+    public static void TelaLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/view/viewLogin.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            primaryStage.setTitle("Mercadinho - Login");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            System.out.println("Erro ao abrir TelaLogin: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
-    public static void TelaLogin() throws IOException {
-        Parent telaLogin = FXMLLoader.load(Main.class.getResource("/view/viewLogin.fxml"));
-        main = new Scene(telaLogin);
-        stage.setTitle("Mercadinho - Login");
-        stage.setScene(main);
-        stage.setResizable(false);
-        stage.centerOnScreen();
-        stage.show();
+    // ---- Abre qualquer tela ----
+    public static void go(String fxmlPath, String titulo) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlPath));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            primaryStage.setTitle(titulo);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar FXML: " + fxmlPath);
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
