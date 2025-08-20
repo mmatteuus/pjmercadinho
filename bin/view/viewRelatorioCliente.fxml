@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="800" prefWidth="1200"
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.controllerRelatorioCliente">
+
+  <left>
+    <Pane prefWidth="280" style="-fx-background-color: #777777;">
+      <VBox alignment="TOP_CENTER" spacing="15" prefWidth="280" prefHeight="800">
+        <Label text="USUÁRIO:" style="-fx-text-fill: white; -fx-font-size: 16px;"/>
+        <Label fx:id="lblUser" text="Usuário" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+        <Button text="REGISTRAR VENDA" prefWidth="230" onAction="#onNavRegistrarVenda"/>
+        <Button text="MENU PRINCIPAL"  prefWidth="230" onAction="#onNavMenu"/>
+        <Button text="CLIENTES"        prefWidth="230" onAction="#onNavClientes"/>
+        <Button text="PRODUTOS"        prefWidth="230" onAction="#onNavProdutos"/>
+        <Button text="VENDAS"          prefWidth="230" onAction="#onNavVendas"/>
+        <Button text="FUNCIONÁRIOS"    prefWidth="230" onAction="#onNavFuncionarios"/>
+        <Region VBox.vgrow="ALWAYS"/>
+        <Button text="SAIR" prefWidth="180" onAction="#onNavSair"/>
+      </VBox>
+    </Pane>
+  </left>
+
+  <center>
+    <Pane>
+      <Label layoutX="10" layoutY="10" text="RELATÓRIO DE CLIENTES"
+             style="-fx-text-fill: #c53030; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+      <Separator layoutX="10" layoutY="40" prefWidth="860"/>
+      <TextField fx:id="txtBusca" layoutX="10" layoutY="60" prefWidth="500" promptText="Insira CPF ou Nome"/>
+      <Button layoutX="520" layoutY="60" prefHeight="40" prefWidth="130" text="Pesquisar"/>
+      <TableView fx:id="tableClientes" layoutX="10" layoutY="120" prefHeight="620" prefWidth="860">
+        <columns>
+          <TableColumn text="ID" prefWidth="80"/>
+          <TableColumn text="Nome" prefWidth="200"/>
+          <TableColumn text="CPF" prefWidth="150"/>
+          <TableColumn text="Telefone" prefWidth="150"/>
+          <TableColumn text="Email" prefWidth="250"/>
+        </columns>
+      </TableView>
+    </Pane>
+  </center>
+</BorderPane>

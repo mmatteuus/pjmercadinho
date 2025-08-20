@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.Scene?>
+<?import javafx.scene.Parent?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerLogin"
+            prefWidth="400" prefHeight="300"
+            stylesheets="@/application/application.css">
+
+    <center>
+        <VBox alignment="CENTER" spacing="15">
+            <padding>
+                <Insets top="30" right="30" bottom="30" left="30"/>
+            </padding>
+
+            <children>
+                <Label text="MERCADINHO" styleClass="title-medium"/>
+                <Label text="Login" styleClass="title-small"/>
+
+                <TextField fx:id="txtUsuario" promptText="Usuário" prefWidth="220" styleClass="text-field"/>
+                <PasswordField fx:id="txtSenha" promptText="Senha" prefWidth="220" styleClass="text-field"/>
+
+                <Button text="Entrar" onAction="#actionButton"
+                        prefWidth="220" styleClass="button"/>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
+
+

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="800" prefWidth="1200"
+            xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerRelatorioCliente"
+            stylesheets="@/application/application.css">
+
+  <left>
+    <VBox alignment="TOP_CENTER" spacing="15" prefWidth="280" styleClass="sidebar">
+      <Label text="USUÁRIO:" styleClass="label"/>
+      <Label fx:id="lblUser" text="Usuário" styleClass="label title-small"/>
+      <Button text="REGISTRAR VENDA" prefWidth="230" onAction="#onNavRegistrarVenda" styleClass="button-secondary"/>
+      <Button text="MENU PRINCIPAL"  prefWidth="230" onAction="#onNavMenu" styleClass="button-secondary"/>
+      <Button text="CLIENTES"        prefWidth="230" onAction="#onNavClientes" styleClass="button-secondary"/>
+      <Button text="PRODUTOS"        prefWidth="230" onAction="#onNavProdutos" styleClass="button-secondary"/>
+      <Button text="VENDAS"          prefWidth="230" onAction="#onNavVendas" styleClass="button-secondary"/>
+      <Button text="FUNCIONÁRIOS"    prefWidth="230" onAction="#onNavFuncionarios" styleClass="button-secondary"/>
+      <Region VBox.vgrow="ALWAYS"/>
+      <Button text="SAIR" prefWidth="180" onAction="#onNavSair" styleClass="button"/>
+    </VBox>
+  </left>
+
+  <center>
+    <VBox spacing="15" padding="20">
+      <Label text="RELATÓRIO DE CLIENTES"
+             styleClass="title-medium"/>
+      <Separator/>
+      <HBox spacing="10">
+        <TextField fx:id="txtBusca" prefWidth="500" promptText="Insira CPF ou Nome" styleClass="text-field"/>
+        <Button fx:id="btnPesquisar" text="Pesquisar" prefHeight="40" prefWidth="130" styleClass="button"/>
+      </HBox>
+      <TableView fx:id="tableClientes" prefHeight="620" prefWidth="860" styleClass="table-view">
+        <columns>
+          <TableColumn text="ID" prefWidth="80"/>
+          <TableColumn text="Nome" prefWidth="200"/>
+          <TableColumn text="CPF" prefWidth="150"/>
+          <TableColumn text="Telefone" prefWidth="150"/>
+          <TableColumn text="Email" prefWidth="250"/>
+        </columns>
+      </TableView>
+    </VBox>
+  </center>
+</BorderPane>
+
+

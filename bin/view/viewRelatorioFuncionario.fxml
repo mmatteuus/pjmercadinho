@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerRelatorioFuncionario"
+            prefWidth="1200" prefHeight="800">
+
+    <left>
+        <fx:include source="viewSidebar.fxml"/>
+    </left>
+
+    <center>
+        <VBox spacing="15" padding="20">
+            <Label text="Relatório de Funcionários" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+            <TableView fx:id="tableFuncionarios">
+                <columns>
+                    <TableColumn text="Nome" prefWidth="200"/>
+                    <TableColumn text="CPF" prefWidth="150"/>
+                    <TableColumn text="Cargo" prefWidth="150"/>
+                    <TableColumn text="Salário" prefWidth="120"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

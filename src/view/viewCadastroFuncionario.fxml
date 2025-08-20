@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="800" prefWidth="1200"
+            xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerCadastroFuncionario"
+            stylesheets="@/application/application.css">
+
+  <left>
+    <VBox alignment="TOP_CENTER" spacing="15" prefWidth="280" styleClass="sidebar">
+      <Label text="USUÁRIO:" styleClass="label"/>
+      <Label fx:id="lblUser" text="Usuário" styleClass="label title-small"/>
+      <Button text="REGISTRAR VENDA" prefWidth="230" onAction="#onNavRegistrarVenda" styleClass="button-secondary"/>
+      <Button text="MENU PRINCIPAL"  prefWidth="230" onAction="#onNavMenu" styleClass="button-secondary"/>
+      <Button text="CLIENTES"        prefWidth="230" onAction="#onNavClientes" styleClass="button-secondary"/>
+      <Button text="PRODUTOS"        prefWidth="230" onAction="#onNavProdutos" styleClass="button-secondary"/>
+      <Button text="VENDAS"          prefWidth="230" onAction="#onNavVendas" styleClass="button-secondary"/>
+      <Button text="FUNCIONÁRIOS"    prefWidth="230" onAction="#onNavFuncionarios" styleClass="button-secondary"/>
+      <Region VBox.vgrow="ALWAYS"/>
+      <Button text="SAIR" prefWidth="180" onAction="#onNavSair" styleClass="button"/>
+    </VBox>
+  </left>
+
+  <center>
+    <VBox spacing="15" padding="20">
+      <Label text="CADASTRO DE FUNCIONÁRIO"
+             styleClass="title-medium"/>
+      <Separator/>
+      <GridPane hgap="20" vgap="12">
+        <Label text="Nome:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtNome" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="text-field"/>
+        <Label text="CPF:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtCpf" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="text-field"/>
+        <Label text="Data Nasc.:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtDataNasc" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="text-field"/>
+        <Label text="Cargo:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+        <TextField fx:id="txtCargo" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="text-field"/>
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <TextField fx:id="txtEmail" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="text-field"/>
+        <Label text="Telefone:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="txtTelefone" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="text-field"/>
+        <Label text="Nível:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
+        <TextField fx:id="txtNivel" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="6" styleClass="text-field"/>
+        <Label text="Endereço:" GridPane.columnIndex="0" GridPane.rowIndex="7"/>
+        <TextField fx:id="txtEndereco" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="7" styleClass="text-field"/>
+        <Label text="Senha:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+        <TextField fx:id="txtSenha" prefWidth="300" GridPane.columnIndex="1" GridPane.rowIndex="8" styleClass="text-field"/>
+      </GridPane>
+      <HBox spacing="20">
+        <Button fx:id="btnSalvar" text="Salvar" prefHeight="45" prefWidth="180" styleClass="button"/>
+        <Button fx:id="btnCancelar" text="Cancelar" prefHeight="45" prefWidth="180" styleClass="button-secondary"/>
+      </HBox>
+      <TableView fx:id="tableFuncionarios" prefWidth="860" prefHeight="260" styleClass="table-view">
+        <columns>
+          <TableColumn text="Nome" prefWidth="150"/>
+          <TableColumn text="CPF" prefWidth="110"/>
+          <TableColumn text="Data Nasc." prefWidth="110"/>
+          <TableColumn text="Cargo" prefWidth="100"/>
+          <TableColumn text="Email" prefWidth="160"/>
+          <TableColumn text="Telefone" prefWidth="110"/>
+          <TableColumn text="Nível" prefWidth="100"/>
+          <TableColumn text="Endereço" prefWidth="150"/>
+        </columns>
+      </TableView>
+    </VBox>
+  </center>
+</BorderPane>
+
+

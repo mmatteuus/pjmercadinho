@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerMenu"
+            prefWidth="1200" prefHeight="800">
+
+    <!-- Lateral -->
+    <left>
+        <VBox alignment="TOP_CENTER" spacing="10" style="-fx-background-color: #444;" prefWidth="250">
+            <padding>
+                <Insets top="20" left="10" right="10" bottom="20"/>
+            </padding>
+
+            <Label text="Usuário:" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+            <Label fx:id="txtUser" text="NOME"
+                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+            <Button text="Menu Principal" onAction="#onNavMenuPrincipal" prefWidth="220"/>
+            <Button text="Clientes" onAction="#onNavClientes" prefWidth="220"/>
+            <Button text="Produtos" onAction="#onNavProdutos" prefWidth="220"/>
+            <Button text="Registrar Venda" onAction="#onNavRegistrarVenda" prefWidth="220"/>
+            <Button text="Relatório de Vendas" onAction="#onNavVendas" prefWidth="220"/>
+            <Button text="Funcionários" onAction="#onNavFuncionarios" prefWidth="220"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Sair" onAction="#onNavSair" prefWidth="200"/>
+        </VBox>
+    </left>
+
+    <!-- Conteúdo central -->
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <Label text="Bem-vindo ao Mercadinho!"
+                   style="-fx-font-size: 26px; -fx-font-weight: bold;"/>
+            <Text text="Escolha uma opção no menu à esquerda."
+                  style="-fx-font-size: 16px;"/>
+        </VBox>
+    </center>
+</BorderPane>

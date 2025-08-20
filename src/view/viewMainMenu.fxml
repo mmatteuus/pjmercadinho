@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerMainMenu"
+            prefWidth="1200" prefHeight="800"
+            stylesheets="@/application/application.css">
+
+    <!-- Lateral -->
+    <left>
+        <VBox alignment="TOP_CENTER" spacing="10" styleClass="sidebar">
+            <padding>
+                <Insets top="20" left="10" right="10" bottom="20"/>
+            </padding>
+
+            <Label text="Usuário:" styleClass="label"/>
+            <Label fx:id="txtUser" text="NOME"
+                   styleClass="label title-small"/>
+
+            <Button text="Menu Principal" onAction="#onNavMenuPrincipal" prefWidth="220" styleClass="button-secondary"/>
+            <Button text="Clientes" onAction="#onNavClientes" prefWidth="220" styleClass="button-secondary"/>
+            <Button text="Produtos" onAction="#onNavProdutos" prefWidth="220" styleClass="button-secondary"/>
+            <Button text="Registrar Venda" onAction="#onNavRegistrarVenda" prefWidth="220" styleClass="button-secondary"/>
+            <Button text="Relatório de Vendas" onAction="#onNavVendas" prefWidth="220" styleClass="button-secondary"/>
+            <Button text="Funcionários" onAction="#onNavFuncionarios" prefWidth="220" styleClass="button-secondary"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Sair" onAction="#onNavSair" prefWidth="200" styleClass="button"/>
+        </VBox>
+    </left>
+
+    <!-- Conteúdo central -->
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <Label text="Bem-vindo ao Mercadinho!"
+                   styleClass="title-large"/>
+            <Text text="Escolha uma opção no menu à esquerda."
+                  styleClass="label"/>
+        </VBox>
+    </center>
+</BorderPane>
+
+

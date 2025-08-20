@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerCadastroVenda"
+            prefWidth="1200" prefHeight="800"
+            stylesheets="@/application/application.css">
+
+    <left>
+        <fx:include source="viewSidebar.fxml"/>
+    </left>
+
+    <center>
+        <VBox spacing="15" padding="20">
+            <Label text="Registrar Venda" styleClass="title-medium"/>
+
+            <GridPane hgap="10" vgap="10">
+                <Label text="Cliente:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="cbCli" prefWidth="300" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="combo-box"/>
+
+                <Label text="Vendedor:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                <ComboBox fx:id="cbVend" prefWidth="300" GridPane.rowIndex="0" GridPane.columnIndex="3" styleClass="combo-box"/>
+
+                <Label text="Produto:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <ComboBox fx:id="cbProd" prefWidth="300" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="combo-box"/>
+
+                <Label text="Preço Unitário:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtPrecoUn" prefWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="3" styleClass="text-field" editable="false"/>
+
+                <Label text="Tipo Unidade:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtTipoUn" prefWidth="150" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field" editable="false"/>
+
+                <Label text="Quantidade:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtQtd" prefWidth="150" GridPane.rowIndex="2" GridPane.columnIndex="3" styleClass="text-field"/>
+
+                <Label text="Forma de Pagamento:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtFormaPgto" prefWidth="300" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="text-field"/>
+
+                <Label text="CPF Cliente:" GridPane.rowIndex="3" GridPane.columnIndex="2"/>
+                <TextField fx:id="txtCpf" prefWidth="300" GridPane.rowIndex="3" GridPane.columnIndex="3" styleClass="text-field" editable="false"/>
+            </GridPane>
+
+            <HBox spacing="15">
+                <Button text="Adicionar Produto" onAction="#onAddProd" styleClass="button"/>
+                <Button text="Excluir Item" onAction="#onExcluirItem" styleClass="button-secondary"/>
+                <Button text="Finalizar Venda" onAction="#onSalvar" styleClass="button"/>
+            </HBox>
+
+            <TableView fx:id="tableProds" styleClass="table-view">
+                <columns>
+                    <TableColumn fx:id="colProd" text="Produto" prefWidth="200"/>
+                    <TableColumn fx:id="colTipoUn" text="Tipo Un." prefWidth="80"/>
+                    <TableColumn fx:id="colPrecoUn" text="Preço Unit." prefWidth="100"/>
+                    <TableColumn fx:id="colQtd" text="Qtd" prefWidth="80"/>
+                    <TableColumn text="Subtotal" prefWidth="120"/>
+                </columns>
+            </TableView>
+
+            <Label text="Total:" styleClass="title-small"/>
+            <TextField fx:id="txtTotal" styleClass="text-field" editable="false"/>
+        </VBox>
+    </center>
+</BorderPane>
+
+

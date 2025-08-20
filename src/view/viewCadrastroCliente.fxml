@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controller.ControllerCadastroCliente"
+            prefWidth="1200" prefHeight="800"
+            stylesheets="@/application/application.css">
+
+    <left>
+        <fx:include source="viewSidebar.fxml"/>
+    </left>
+
+    <center>
+        <VBox spacing="15" padding="20">
+            <Label text="Cadastro de Cliente" styleClass="title-medium"/>
+            <GridPane hgap="10" vgap="10">
+                <Label text="Nome:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtNome" GridPane.rowIndex="0" GridPane.columnIndex="1" styleClass="text-field"/>
+                <Label text="CPF:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtCpf" GridPane.rowIndex="1" GridPane.columnIndex="1" styleClass="text-field"/>
+                <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtEmail" GridPane.rowIndex="2" GridPane.columnIndex="1" styleClass="text-field"/>
+                <Label text="Telefone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <TextField fx:id="txtTelefone" GridPane.rowIndex="3" GridPane.columnIndex="1" styleClass="text-field"/>
+            </GridPane>
+
+            <HBox spacing="15">
+                <Button text="Salvar" fx:id="btnSalvar" styleClass="button"/>
+                <Button text="Cancelar" fx:id="btnCancelar" styleClass="button-secondary"/>
+            </HBox>
+
+            <TableView fx:id="tableClientes" styleClass="table-view">
+                <columns>
+                    <TableColumn text="Nome" prefWidth="200"/>
+                    <TableColumn text="CPF" prefWidth="150"/>
+                    <TableColumn text="Email" prefWidth="200"/>
+                    <TableColumn text="Telefone" prefWidth="150"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>
+
+
